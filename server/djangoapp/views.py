@@ -121,6 +121,7 @@ def get_dealer_details(request, dealer_id):
         #dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
         print(reviews)
         dealer_reviews = ''
+        
         for review in reviews:
             if (review is not None):
                 dealer_reviews += review.review + " "
