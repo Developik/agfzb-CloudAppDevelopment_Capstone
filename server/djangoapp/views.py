@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf
 import logging
 import json
 
@@ -98,6 +98,7 @@ def get_dealerships(request):
         url = "https://b993224f.us-south.apigw.appdomain.cloud/api/dealership/api/dealership"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
+        context['dealerships'] = dealerships
         # Concat all dealer's short name
         #dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
         print(dealerships)
@@ -107,7 +108,7 @@ def get_dealerships(request):
                 dealer_names += dealer.short_name + " "
         
         # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
@@ -117,17 +118,33 @@ def get_dealer_details(request, dealer_id):
         url = "https://b993224f.us-south.apigw.appdomain.cloud/api/review/api/review"
         # Get dealers from the URL
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
+        url = f"https://b993224f.us-south.apigw.appdomain.cloud/api/dealership/api/dealership"
+        
+        dealerships = get_dealers_from_cf(url)
+
         # Concat all dealer's short name
         #dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
         print(reviews)
         dealer_reviews = ''
+
+        oneTime_dealr = True
+        
+        curr_dealer = ""
         
         for review in reviews:
             if (review is not None):
                 dealer_reviews += review.review + " "
-        
+
+            if oneTime_dealr:
+                for dealer in dealerships:
+                    if str(dealer.id) == str(review.dealership):
+                        curr_dealer = dealer
+                oneTime_dealr = False
+
+        context['reviews'] = reviews
+        context['dealer'] = curr_dealer
         # Return a list of dealer short name
-        return HttpResponse(dealer_reviews)
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):

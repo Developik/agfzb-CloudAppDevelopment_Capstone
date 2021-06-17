@@ -116,6 +116,9 @@ def get_dealer_reviews_from_cf(url, dealer_id, **kwargs):
             new_sentiment = analyze_review_sentiments(
                 review["review"])['keywords'][0]['sentiment']['label']
 
+            if (new_sentiment == ""):
+                new_sentiment = "neutral"
+                
             print("----" + new_sentiment)
 
             review_obj = DealerReview(dealership=review["dealership"], name=review["name"], purchase=review["purchase"],
