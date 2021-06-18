@@ -113,10 +113,18 @@ def get_dealer_reviews_from_cf(url, dealer_id, **kwargs):
                 if item not in review:
                     review[item] = ""
 
-            new_sentiment = analyze_review_sentiments(
-                review["review"])['keywords'][0]['sentiment']['label']
+            act_review = review["review"]
 
-            if (new_sentiment == ""):
+            new_sentiment_json = analyze_review_sentiments(
+                act_review)
+            new_sentiment = ""
+
+            try:
+                new_sentiment = new_sentiment_json['keywords'][0]['sentiment']['label']
+            except:
+                pass
+            
+            if new_sentiment == "":
                 new_sentiment = "neutral"
                 
             print("----" + new_sentiment)

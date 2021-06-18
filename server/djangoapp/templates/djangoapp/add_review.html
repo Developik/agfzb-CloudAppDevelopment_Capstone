@@ -16,6 +16,7 @@
 <body>
     <div class="container-fluid">
         <form action="{% url 'djangoapp:add_review' dealer.id %}" method="POST">
+            {% csrf_token %}
             <h1> Add a Review about
                 <b>{{ dealer.full_name }}</b></h1>
 
@@ -29,7 +30,7 @@
                         </b>
                     </h5>
                 </label>
-                <textarea class="form-control" id="review_content" rows="2" required></textarea>
+                <textarea class="form-control" id="review_content" name="review_content" rows="2" required></textarea>
                 <div class = "container-fluid" style = "margin-top: 2em">
                     <span>
                         <input class="form-check-input" type="checkbox" name="purchasecheck" id="purchasecheck">
@@ -51,22 +52,26 @@
                     </span>
 
                     <span>
-                        <select name="car" id="car" class="form-select" required>
+                        <select name="car_details" id="car_details" class="form-select" required>
                             {% for car in cars %}
-                            <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year|date:"Y" }}
+                            <option selected value="{{car.name}}-{{car.make.name}}-{{ car.year }}">
+                                {{car.name}}-{{car.make.name}}-{{ car.year }}
                             </option>
                             {% endfor %}
                         </select>
                     </span>
                 </div>
-                <label for="purchasedate">
+                <label for="purchase_date">
                     <h5>
                         <b>
                             Select Your Purchase Date:
                         </b>
                     </h5>
                 </label>
-                <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
+                <input class="date-own form-control" type="date" name="purchase_date" id="purchase_date">
+                
+                <input type="text" value = "{{dealer.id}}" id = "dealership"
+                name = "dealership" class="form-control" required hidden>
                 <button class="btn btn-primary" type="submit" style="margin-top: 2em;">
                     Submit
                 </button>

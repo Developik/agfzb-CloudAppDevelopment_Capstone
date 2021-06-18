@@ -54,54 +54,56 @@
 
     </nav>
 
+    <div class="container-fluid">
+        <h1>Reviews for <b>{{dealer.full_name}}</b></h1>
 
-    <h1>Reviews for <b>{{dealer.full_name}}</b></h1>
-
-    {% if user.is_authenticated %}
-    <form class="form-inline" action="{% url 'djangoapp:add_review' dealer.id %}" method="GET">
-        <button class="btn btn-primary" type="submit">
-            Add Review
-        </button>
-    </form>
-    {% endif %}
-
-
-    <!-- Add reviews as cards -->
-
-    <div class="card-columns">
-        {% for review in reviews %}
-        <div class="card">
-
-            {% if review.sentiment == 'positive' %}
-            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" width="50px" height="50px">
+        <div class="container-fluid" style = "margin-top: 2em; margin-bottom: 2em;">
+            {% if user.is_authenticated %}
+            <form class="form-inline" action="{% url 'djangoapp:add_review' dealer.id %}" method="GET">
+                <button class="btn btn-primary" type="submit">
+                    Add Review
+                </button>
+            </form>
             {% endif %}
-
-            {% if review.sentiment == 'neutral' %}
-            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/neutral.png" width="50px" height="50px">
-            {% endif %}
-
-            {% if review.sentiment == 'negative' %}
-            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/negative.png" width="50px" height="50px">
-            {% endif %}
-
-            <div class="card-body">
-                <div class="card-title">
-                    <b>
-                        {{review.car_make}}
-                        {{review.car_model}}
-                        {{review.year}}
-                    </b>
-                </div>
-                <div class="card-text">
-                    {{review.review}}
-                </div>
-            </div>
-
-
         </div>
-        {% endfor %}
-    </div>
 
+
+        <!-- Add reviews as cards -->
+
+        <div class="card-columns">
+            {% for review in reviews %}
+            <div class="card">
+
+                {% if review.sentiment == 'positive' %}
+                <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" width="50px" height="50px">
+                {% endif %}
+
+                {% if review.sentiment == 'neutral' %}
+                <img class="card-img-left" src="{{MEDIA_URL}}/emoji/neutral.png" width="50px" height="50px">
+                {% endif %}
+
+                {% if review.sentiment == 'negative' %}
+                <img class="card-img-left" src="{{MEDIA_URL}}/emoji/negative.png" width="50px" height="50px">
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="card-title">
+                        <b>
+                            {{review.car_make}}
+                            {{review.car_model}}
+                            {{review.year}}
+                        </b>
+                    </div>
+                    <div class="card-text">
+                        {{review.review}}
+                    </div>
+                </div>
+
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 
 </html>
