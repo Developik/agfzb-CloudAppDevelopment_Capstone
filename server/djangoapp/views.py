@@ -10,6 +10,7 @@ from datetime import datetime
 from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf
 import logging
 import json
+from django.urls import reverse
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -106,7 +107,7 @@ def get_dealerships(request):
         for dealer in dealerships:
             if (dealer is not None):
                 dealer_names += dealer.short_name + " "
-        
+
         # Return a list of dealer short name
         return render(request, 'djangoapp/index.html', context)
 
@@ -119,7 +120,7 @@ def get_dealer_details(request, dealer_id):
         # Get dealers from the URL
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
         url = f"https://b993224f.us-south.apigw.appdomain.cloud/api/dealership/api/dealership"
-        
+
         dealerships = get_dealers_from_cf(url)
 
         # Concat all dealer's short name
@@ -128,29 +129,50 @@ def get_dealer_details(request, dealer_id):
         dealer_reviews = ''
 
         oneTime_dealr = True
-        
-        curr_dealer = ""
-        
-        for review in reviews:
-            if (review is not None):
-                dealer_reviews += review.review + " "
 
-            if oneTime_dealr:
-                for dealer in dealerships:
-                    if str(dealer.id) == str(review.dealership):
-                        curr_dealer = dealer
-                oneTime_dealr = False
+        curr_dealer = ""
+
+        for dealer in dealerships:
+            if str(dealer.id) == str(dealer_id):
+                curr_dealer = dealer
 
         context['reviews'] = reviews
         context['dealer'] = curr_dealer
+
+        print(reviews)
         # Return a list of dealer short name
         return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
+# def add_review_page(request, dealer_id):
+#    context = {}
+#    if request.method == "GET":
+#        return render(request, 'djangoapp/add_review.html', context)
+
+# Create a `add_review` view to submit a review
+
+
 def add_review(request, dealer_id):
     context = {}
+
+    if request.method == "GET":
+        # query dealer id name
+        url = f"https://b993224f.us-south.apigw.appdomain.cloud/api/dealership/api/dealership"
+
+        dealerships = get_dealers_from_cf(url)
+
+        curr_dealer = ""
+        for dealer in dealerships:
+            if str(dealer.id) == str(dealer_id):
+                curr_dealer = dealer
+
+        context['dealer'] = curr_dealer
+
+        return render(request, 'djangoapp/add_review.html', context)
+        # return HttpResponseRedirect(reverse(viewname='djangoapp:add_review', args=(dealer_id,)))
+
     if request.method == "POST" and \
-        request.user.is_authenticated():
+            request.user.is_authenticated():
         url = "https://b993224f.us-south.apigw.appdomain.cloud/api/review/api/review"
         review = dict()
         review["dealership"] = request.dealership
